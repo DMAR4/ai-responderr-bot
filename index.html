@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <title>تجربة بوت الذكاء الاصطناعي</title>
+  <style>
+    body { font-family: sans-serif; direction: rtl; text-align: center; margin-top: 80px; background: #f6f6f6; }
+    input, button { padding: 10px; font-size: 18px; border-radius: 8px; border: 1px solid #ccc; }
+    button { background-color: #4CAF50; color: white; cursor: pointer; }
+    button:hover { background-color: #45a049; }
+    #reply { margin-top: 20px; font-size: 20px; color: #333; white-space: pre-wrap; }
+    .container { background: #fff; display: inline-block; padding: 20px; border-radius: 12px; box-shadow: 0 6px 18px rgba(0,0,0,0.08); }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>💬 تجربة بوت الذكاء الاصطناعي</h2>
+    <input id="msg" type="text" placeholder="اكتب رسالتك هنا..." size="40">
+    <button onclick="sendMessage()">إرسال</button>
+    <div id="reply"></div>
+  </div>
+
+  <script>
+    async function sendMessage() {
+      const text = document.getElementById('msg').value;
+      const replyDiv = document.getElementById('reply');
+      replyDiv.textContent = '⏳ جاري الإرسال...';
+
+      try {
+        const res = await fetch('https://اسم-تطبيقك.onrender.com/webhook', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ text })
+        });
+
+        if (!res.ok) {
+          const txt = await res.text();
+          replyDiv.textContent = '❌ Server returned error: ' + res.status + ' - ' + txt;
+          return;
+        }
+
+        const data = await res.json();
+        if (data.ok) {
+          replyDiv.textContent = '🧠 الرد: ' + data.reply;
+        } else {
+          replyDiv.textContent = '❌ حدث خطأ: ' + (data.error || 'Unknown');
+        }
+      } catch (err) {
+        replyDiv.textContent = '⚠️ فشل الاتصال بالسيرفر. تحقق أن الرابط صحيح وأن الخدمة تعمل.';
+        console.error(err);
+      }
+    }
+  </script>
+</body>
+</html>
